@@ -319,8 +319,9 @@ export async function generateThumbnail(
 			await extractVideoThumb(file, imgFilename, '00:00:00', { width: 32, height: 32 })
 			const buff = await fs.readFile(imgFilename)
 			thumbnail = buff.toString('base64')
-
-			await fs.unlink(imgFilename)
+			if (imgFilename) {
+				await fs.unlink(imgFilename)
+			}
 		} catch(err) {
 			options.logger?.debug('could not generate video thumb: ' + err)
 		}
@@ -439,7 +440,9 @@ export const encryptedStream = async(
 
 		if(didSaveToTmpPath) {
 			try {
-				await fs.unlink(bodyPath!)
+				if (didSaveToTmpPath) {
+					await (await (await fs.unlink(bodyPath!)))
+				}
 			} catch(err) {
 				logger?.error({ err }, 'failed to save to tmp path')
 			}
